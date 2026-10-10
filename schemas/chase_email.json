@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ChaseEmail",
+  "description": "A draft chase email for an overdue invoice. Status starts as 'draft'. Owner must approve before sending. Secretary NEVER sends without approval (human-in-the-loop).",
+  "type": "object",
+  "required": [
+    "email_id", "to", "subject", "body", "status",
+    "related_invoice", "related_task_id"
+  ],
+  "properties": {
+    "email_id": {
+      "type": "string",
+      "pattern": "^EMAIL-\\d{4}$",
+      "description": "Unique email identifier"
+    },
+    "to": {
+      "type": "string",
+      "description": "Recipient email address (placeholder if unknown)"
+    },
+    "cc": {
+      "type": ["string", "null"],
+      "description": "CC recipients (optional)"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Email subject line"
+    },
+    "body": {
+      "type": "string",
+      "description": "Email body content"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "approved", "sent", "rejected"],
+      "description": "Email approval status"
+    },
+    "related_invoice": {
+      "type": "string",
+      "description": "Invoice number this email is about"
+    },
+    "related_task_id": {
+      "type": "string",
+      "description": "ID of the related task"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of creation"
+    }
+  },
+  "additionalProperties": false
+}

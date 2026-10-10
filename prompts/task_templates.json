@@ -1,0 +1,43 @@
+{
+  "overdue": {
+    "title_template": "Chase overdue payment: {vendor_name} (RM {amount:.2f})",
+    "description_template": "Invoice {invoice_number} from {vendor_name} for RM {amount:.2f} is overdue. Due date: {due_date}. No payment record found. Details: {details}",
+    "action_required": "Review the draft chase email. Approve to send, or reject if payment has already been made.",
+    "priority": 2,
+    "generate_email": true
+  },
+  "duplicate": {
+    "title_template": "VERIFY duplicate invoice: {invoice_number} (RM {amount:.2f})",
+    "description_template": "Invoice {invoice_number} from {vendor_name} for RM {amount:.2f} appears to be a duplicate of invoice {duplicate_of}. Details: {details}",
+    "action_required": "Confirm which invoice is the original. Void the duplicate and update the ledger. If both were paid, request a refund from the vendor.",
+    "priority": 1,
+    "generate_email": false
+  },
+  "escalation": {
+    "title_template": "ESCALATION: {escalation_reason} ({vendor_name})",
+    "description_template": "Invoice {invoice_number} from {vendor_name} for RM {amount:.2f} has been flagged for escalation. Reason: {escalation_reason}. Details: {details}",
+    "action_required": "Management review required. Approve the payment, reject it, or request additional documentation from the vendor.",
+    "priority": 2,
+    "generate_email": false,
+    "priority_override": {
+      "condition": "amount >= 10000",
+      "priority": 1
+    }
+  },
+  "flagged": {
+    "title_template": "Review flagged document: {invoice_number}",
+    "description_template": "Document {invoice_number} from {vendor_name} has been flagged. {confidence_note} Flag reason: {flag_reason}. Details: {details}",
+    "action_required": "Review the source document. If readable, re-process with manual data entry. If unreadable, request a new copy from the vendor.",
+    "priority": 3,
+    "generate_email": false,
+    "confidence_threshold": 0.70,
+    "priority_override": {
+      "condition": "confidence < 0.70",
+      "priority": 3
+    },
+    "priority_override_secondary": {
+      "condition": "confidence >= 0.70 and confidence < 0.85",
+      "priority": 4
+    }
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExceptionEvent",
+  "description": "An exception event raised by the Financial agent. The Secretary consumes these and converts them to tasks and chase emails.",
+  "type": "object",
+  "required": ["event_type", "invoice_number", "vendor_name", "amount", "details"],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": ["overdue", "duplicate", "escalation", "flagged"],
+      "description": "Type of exception event"
+    },
+    "invoice_number": {
+      "type": "string",
+      "description": "Invoice number associated with the exception"
+    },
+    "vendor_name": {
+      "type": "string",
+      "description": "Name of the vendor/supplier"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Amount in MYR (Malaysian Ringgit)"
+    },
+    "currency": {
+      "type": "string",
+      "default": "MYR",
+      "description": "Currency code"
+    },
+    "invoice_date": {
+      "type": "string",
+      "description": "Invoice date (ISO 8601 or human-readable)"
+    },
+    "due_date": {
+      "type": "string",
+      "description": "Payment due date (for overdue events)"
+    },
+    "details": {
+      "type": "string",
+      "description": "Human-readable description of the issue"
+    },
+    "duplicate_of": {
+      "type": "string",
+      "description": "Invoice number this is a duplicate of (for duplicate events)"
+    },
+    "escalation_reason": {
+      "type": "string",
+      "description": "Reason for escalation (for escalation events)"
+    },
+    "escalation_code": {
+      "type": "string",
+      "description": "Code identifying the escalation trigger (e.g. LARGE_AMOUNT)"
+    },
+    "flag_reason": {
+      "type": "string",
+      "description": "Reason for flagging (for flagged events)"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "OCR confidence score from Logistics (0.0-1.0)"
+    }
+  },
+  "additionalProperties": false
+}

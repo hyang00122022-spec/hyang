@@ -1,0 +1,53 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Secretary Agent — Demo Mode",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["--demo"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Secretary Agent — Demo (JSON output)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["--demo", "--json"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Secretary Agent — Custom Input",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": [
+        "--goal", "Close out September",
+        "--exceptions", "${workspaceFolder}/examples/sample_exceptions.json"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Secretary Agent — Interactive Mode",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["--interactive"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Run Tests",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["tests/", "-v"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    }
+  ]
+}

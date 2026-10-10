@@ -1,0 +1,27 @@
+Subject: Outstanding Payment — Invoice {invoice_number} — {vendor_name}
+
+Dear {vendor_contact_name or "Sir/Madam"},
+
+We are writing regarding the following invoice which appears to be outstanding:
+
+  Invoice No:  {invoice_number}
+  Date:        {invoice_date}
+  Amount Due:  RM {grand_total}
+  Due Date:    {due_date}
+
+As of {today's_date}, we have not located a payment record for this invoice in our system. If payment has been made, kindly share the receipt or bank transfer reference so we can reconcile our records.
+
+If payment has not yet been made, please let us know the expected payment date so we can plan accordingly.
+
+Thank you for your prompt attention.
+
+Best regards,
+{business_name}
+{business_email}
+
+---
+RULES:
+- Secretary drafts this only for items where Financial flagged `overdue`
+- Draft appears in the frontend "Draft Emails" section for owner approval
+- Owner can approve (send) or reject (dismiss) from the UI
+- Secretary never sends without approval — human-in-the-loop

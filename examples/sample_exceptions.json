@@ -1,0 +1,65 @@
+[
+  {
+    "event_type": "duplicate",
+    "invoice_number": "INV-2026-001",
+    "vendor_name": "Tech Supplies Sdn Bhd",
+    "amount": 12500.00,
+    "currency": "MYR",
+    "invoice_date": "2026-09-15",
+    "details": "Invoice number and amount match an existing entry in the ledger (entered on 2026-09-16). Possible double entry.",
+    "duplicate_of": "INV-2026-001 (original)"
+  },
+  {
+    "event_type": "overdue",
+    "invoice_number": "INV-CA-2026-078",
+    "vendor_name": "Creative Agency Sdn Bhd",
+    "amount": 4800.00,
+    "currency": "MYR",
+    "invoice_date": "2026-09-20",
+    "due_date": "2026-10-05",
+    "details": "Payment was due on 2026-10-05. No payment record found in the ledger as of 2026-10-10."
+  },
+  {
+    "event_type": "overdue",
+    "invoice_number": "INV-WP-2026-031",
+    "vendor_name": "Workshop Partners Sdn Bhd",
+    "amount": 2300.00,
+    "currency": "MYR",
+    "invoice_date": "2026-08-25",
+    "due_date": "2026-09-10",
+    "details": "Payment was due on 2026-09-10 (30 days overdue). No payment record found."
+  },
+  {
+    "event_type": "escalation",
+    "invoice_number": "INV-2026-001",
+    "vendor_name": "Tech Supplies Sdn Bhd",
+    "amount": 12500.00,
+    "currency": "MYR",
+    "invoice_date": "2026-09-15",
+    "details": "Single invoice exceeds RM 10,000 threshold. Management approval required per S6 rules.",
+    "escalation_reason": "Large amount exceeds RM 10,000 threshold",
+    "escalation_code": "LARGE_AMOUNT"
+  },
+  {
+    "event_type": "flagged",
+    "invoice_number": "INV-WP-2026-032",
+    "vendor_name": "Workshop Partners Sdn Bhd",
+    "amount": 750.00,
+    "currency": "MYR",
+    "invoice_date": "2026-09-22",
+    "details": "OCR confidence is 0.65. Several line items could not be clearly read. Manual review recommended.",
+    "flag_reason": "Low OCR confidence",
+    "confidence": 0.65
+  },
+  {
+    "event_type": "flagged",
+    "invoice_number": "INV-FS-2026-045",
+    "vendor_name": "Fresh Supplies Sdn Bhd",
+    "amount": 320.00,
+    "currency": "MYR",
+    "invoice_date": "2026-09-28",
+    "details": "Document quality is acceptable but vendor name has slight OCR mismatch. Confidence is 0.72.",
+    "flag_reason": "Vendor name OCR mismatch",
+    "confidence": 0.72
+  }
+]

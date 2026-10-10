@@ -1,0 +1,63 @@
+[
+  {
+    "doc_id": "DOC-001",
+    "file_name": "invoice_tech_supplies.pdf",
+    "doc_type": "invoice",
+    "vendor_name": "Tech Supplies Sdn Bhd",
+    "invoice_number": "INV-2026-001",
+    "invoice_date": "2026-09-15",
+    "grand_total": 12500.00,
+    "currency": "MYR",
+    "line_items": [
+      {"description": "Laptops x5", "amount": 10000, "category": "IT"},
+      {"description": "Software licenses", "amount": 2500, "category": "IT"}
+    ],
+    "confidence": 0.95,
+    "quality_flags": []
+  },
+  {
+    "doc_id": "DOC-002",
+    "file_name": "receipt_office_rent.pdf",
+    "doc_type": "receipt",
+    "vendor_name": "Pangsapila Management",
+    "invoice_number": "RCT-2026-089",
+    "invoice_date": "2026-09-01",
+    "grand_total": 3500.00,
+    "currency": "MYR",
+    "line_items": [
+      {"description": "Office rent September", "amount": 3500, "category": "RENT"}
+    ],
+    "confidence": 0.98,
+    "quality_flags": []
+  },
+  {
+    "doc_id": "DOC-003",
+    "file_name": "invoice_marketing.pdf",
+    "doc_type": "invoice",
+    "vendor_name": "Creative Agency Sdn Bhd",
+    "invoice_number": "INV-CA-2026-078",
+    "invoice_date": "2026-09-20",
+    "grand_total": 4800.00,
+    "currency": "MYR",
+    "line_items": [
+      {"description": "Social media campaign", "amount": 4800, "category": "MKT"}
+    ],
+    "confidence": 0.88,
+    "quality_flags": []
+  },
+  {
+    "doc_id": "DOC-004",
+    "file_name": "invoice_shipping.pdf",
+    "doc_type": "invoice",
+    "vendor_name": "FastTrack Logistics Sdn Bhd",
+    "invoice_number": "INV-FL-2026-102",
+    "invoice_date": "2026-09-25",
+    "grand_total": 1850.00,
+    "currency": "MYR",
+    "line_items": [
+      {"description": "Express shipping - September", "amount": 1850, "category": "LOG"}
+    ],
+    "confidence": 0.92,
+    "quality_flags": []
+  }
+]
