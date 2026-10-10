@@ -41,6 +41,24 @@
       "justMyCode": true
     },
     {
+      "name": "Gmail Crawler — Mock Mode",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["--gmail", "--gmail-mock", "--goal", "Close out September"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
+      "name": "Gmail Crawler — Real Mode",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/run.py",
+      "args": ["--gmail", "--goal", "Close out September"],
+      "console": "integratedTerminal",
+      "justMyCode": true
+    },
+    {
       "name": "Run Tests",
       "type": "python",
       "request": "launch",

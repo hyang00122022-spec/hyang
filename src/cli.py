@@ -4,6 +4,11 @@ Usage:
     # Demo mode (with sample data)
     python -m src.cli --demo
 
+    # Gmail mode — auto-fetch invoice emails
+    python -m src.cli --gmail --goal "Close out September"
+    python -m src.cli --gmail --gmail-mock  # no real credentials needed
+    python -m src.cli --gmail --gmail-after "2026/09/01" --gmail-before "2026/09/30"
+
     # Process exceptions from a JSON file
     python -m src.cli --goal "Close out September" --exceptions examples/sample_exceptions.json
 
@@ -60,6 +65,8 @@ Examples:
   python -m src.cli --goal "Close out September" --exceptions examples/sample_exceptions.json
   python -m src.cli --goal "Reconcile October" --exceptions exceptions.json --json
   python -m src.cli --interactive
+  python -m src.cli --gmail --gmail-mock
+  python -m src.cli --gmail --gmail-after "2026/09/01" --gmail-before "2026/09/30"
         """,
     )
 
@@ -108,9 +115,105 @@ Examples:
         help="Write output to a file instead of stdout",
     )
 
+    # ------------------------------------------------------------------
+    # Gmail crawler options
+    # ------------------------------------------------------------------
+    parser.add_argument(
+        "--gmail",
+        action="store_true",
+        help="Fetch invoice/receipt emails from Gmail before running the pipeline",
+    )
+    parser.add_argument(
+        "--gmail-mock",
+        action="store_true",
+        help="Use mock Gmail data (no real credentials needed)",
+    )
+    parser.add_argument(
+        "--gmail-after",
+        type=str,
+        default=None,
+        help="Only fetch emails after this date (YYYY/MM/DD)",
+    )
+    parser.add_argument(
+        "--gmail-before",
+        type=str,
+        default=None,
+        help="Only fetch emails before this date (YYYY/MM/DD)",
+    )
+    parser.add_argument(
+        "--gmail-max",
+        type=int,
+        default=50,
+        help="Maximum number of emails to fetch (default: 50)",
+    )
+
     args = parser.parse_args()
 
     secretary = Secretary()
+
+    # ------------------------------------------------------------------
+    # Gmail mode — fetch emails before running pipeline
+    # ------------------------------------------------------------------
+    if args.gmail:
+        from .gmail_crawler import GmailCrawler
+
+        crawler = GmailCrawler(mock=args.gmail_mock)
+
+        print("=" * 60)
+        print("  Secretary Agent — Gmail Crawler Mode")
+        print("=" * 60)
+        print()
+
+        if not crawler.authenticate():
+            print("Failed to authenticate with Gmail. Exiting.")
+            sys.exit(1)
+
+        if crawler.mock and not args.gmail_mock:
+            print("(No credentials.json found — using mock data)\n")
+
+        emails = crawler.fetch_invoice_emails(
+            max_results=args.gmail_max,
+            date_after=args.gmail_after,
+            date_before=args.gmail_before,
+        )
+
+        print(crawler.format_emails_summary(emails))
+        print()
+
+        if not emails:
+            print("No new emails found. Running pipeline with sample data...\n")
+            exceptions = secretary._sample_exceptions()
+            documents = secretary._sample_documents()
+        else:
+            # In production: Logistics would OCR the downloaded attachments
+            # For now: use sample data that matches the email vendors
+            print(
+                f"Downloaded {sum(len(e.downloaded_files) for e in emails)} "
+                f"attachment(s) to staging/.\n"
+                f"(In production, Logistics agent would OCR these files.\n"
+                f" Using sample data for pipeline demo.)\n"
+            )
+            exceptions = secretary._sample_exceptions()
+            documents = secretary._sample_documents()
+
+        result = secretary.run(
+            goal=args.goal,
+            exceptions=exceptions,
+            documents=documents,
+            auto_approve_emails=args.auto_approve,
+        )
+
+        if args.json:
+            output = secretary.result_to_json(result)
+        else:
+            output = secretary.format_result(result)
+
+        if args.output:
+            Path(args.output).write_text(output, encoding="utf-8")
+            print(f"Output written to {args.output}")
+        else:
+            print(output)
+        return
 
     # ------------------------------------------------------------------
     # Interactive mode

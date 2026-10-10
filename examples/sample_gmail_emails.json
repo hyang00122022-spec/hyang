@@ -1,0 +1,133 @@
+[
+  {
+    "message_id": "msg_sample_001",
+    "thread_id": "thread_sample_001",
+    "sender": "Tech Supplies Sdn Bhd <billing@techsupplies.com.my>",
+    "sender_email": "billing@techsupplies.com.my",
+    "subject": "Tax Invoice INV-2026-001 — September 2026",
+    "date": "2026-09-15T10:30:00+08:00",
+    "body_snippet": "Please find attached our tax invoice for the laptops and software licenses supplied on 15 September 2026.",
+    "has_attachment": true,
+    "attachments": [
+      {
+        "filename": "INV-2026-001.pdf",
+        "mime_type": "application/pdf",
+        "size": 245680,
+        "attachment_id": "att_sample_001",
+        "downloaded": true,
+        "local_path": "staging/msg_sample_001_INV-2026-001.pdf"
+      }
+    ],
+    "downloaded_files": ["staging/msg_sample_001_INV-2026-001.pdf"],
+    "detected_doc_type": "invoice",
+    "vendor_name": "Tech Supplies Sdn Bhd",
+    "processed_at": "2026-09-15T11:00:00"
+  },
+  {
+    "message_id": "msg_sample_002",
+    "thread_id": "thread_sample_002",
+    "sender": "Pangsapila Management <accounts@pangsapila.my>",
+    "sender_email": "accounts@pangsapila.my",
+    "subject": "Receipt — Office Rent September 2026",
+    "date": "2026-09-01T09:00:00+08:00",
+    "body_snippet": "Thank you for your payment. Attached is the official receipt for office rent for September 2026.",
+    "has_attachment": true,
+    "attachments": [
+      {
+        "filename": "RCT-2026-089.pdf",
+        "mime_type": "application/pdf",
+        "size": 89200,
+        "attachment_id": "att_sample_002",
+        "downloaded": true,
+        "local_path": "staging/msg_sample_002_RCT-2026-089.pdf"
+      }
+    ],
+    "downloaded_files": ["staging/msg_sample_002_RCT-2026-089.pdf"],
+    "detected_doc_type": "receipt",
+    "vendor_name": "Pangsapila Management",
+    "processed_at": "2026-09-01T10:00:00"
+  },
+  {
+    "message_id": "msg_sample_003",
+    "thread_id": "thread_sample_003",
+    "sender": "Creative Agency <finance@creativeagency.com.my>",
+    "sender_email": "finance@creativeagency.com.my",
+    "subject": "Invoice INV-CA-2026-078 — Social Media Campaign",
+    "date": "2026-09-20T14:15:00+08:00",
+    "body_snippet": "Attached is our invoice for the social media campaign services rendered in September 2026. Payment terms: 15 days.",
+    "has_attachment": true,
+    "attachments": [
+      {
+        "filename": "INV-CA-2026-078.pdf",
+        "mime_type": "application/pdf",
+        "size": 178400,
+        "attachment_id": "att_sample_003",
+        "downloaded": true,
+        "local_path": "staging/msg_sample_003_INV-CA-2026-078.pdf"
+      }
+    ],
+    "downloaded_files": ["staging/msg_sample_003_INV-CA-2026-078.pdf"],
+    "detected_doc_type": "invoice",
+    "vendor_name": "Creative Agency",
+    "processed_at": "2026-09-20T15:00:00"
+  },
+  {
+    "message_id": "msg_sample_004",
+    "thread_id": "thread_sample_004",
+    "sender": "Workshop Partners <ap@workshoppartners.my>",
+    "sender_email": "ap@workshoppartners.my",
+    "subject": "Invoice INV-WP-2026-032 + scanned copy",
+    "date": "2026-09-22T16:45:00+08:00",
+    "body_snippet": "Please process the attached invoice for workshop maintenance services. The scan quality may be slightly low.",
+    "has_attachment": true,
+    "attachments": [
+      {
+        "filename": "INV-WP-2026-032.jpg",
+        "mime_type": "image/jpeg",
+        "size": 534000,
+        "attachment_id": "att_sample_004",
+        "downloaded": true,
+        "local_path": "staging/msg_sample_004_INV-WP-2026-032.jpg"
+      }
+    ],
+    "downloaded_files": ["staging/msg_sample_004_INV-WP-2026-032.jpg"],
+    "detected_doc_type": "invoice",
+    "vendor_name": "Workshop Partners",
+    "processed_at": "2026-09-22T17:00:00"
+  },
+  {
+    "message_id": "msg_sample_005",
+    "thread_id": "thread_sample_005",
+    "sender": "Global Logistics <billing@globallogistics.com.my>",
+    "sender_email": "billing@globallogistics.com.my",
+    "subject": "Shipping Invoice SHP-2026-045 — Freight Charges",
+    "date": "2026-09-28T11:20:00+08:00",
+    "body_snippet": "Freight charges for September shipments. Attached tax invoice and delivery notes.",
+    "has_attachment": true,
+    "attachments": [
+      {
+        "filename": "SHP-2026-045.pdf",
+        "mime_type": "application/pdf",
+        "size": 312500,
+        "attachment_id": "att_sample_005",
+        "downloaded": true,
+        "local_path": "staging/msg_sample_005_SHP-2026-045.pdf"
+      },
+      {
+        "filename": "delivery_notes.pdf",
+        "mime_type": "application/pdf",
+        "size": 145000,
+        "attachment_id": "att_sample_006",
+        "downloaded": true,
+        "local_path": "staging/msg_sample_005_delivery_notes.pdf"
+      }
+    ],
+    "downloaded_files": [
+      "staging/msg_sample_005_SHP-2026-045.pdf",
+      "staging/msg_sample_005_delivery_notes.pdf"
+    ],
+    "detected_doc_type": "invoice",
+    "vendor_name": "Global Logistics",
+    "processed_at": "2026-09-28T12:00:00"
+  }
+]

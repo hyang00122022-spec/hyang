@@ -108,3 +108,48 @@ Best regards,
 {BUSINESS_NAME}
 {BUSINESS_EMAIL}
 """.strip()
+
+# ---------------------------------------------------------------------------
+# Gmail crawler configuration
+# ---------------------------------------------------------------------------
+
+# OAuth credentials (download from Google Cloud Console)
+# See prompts/gmail_setup_guide.md for setup instructions
+GMAIL_CREDENTIALS_FILE = PROJECT_ROOT / "credentials.json"
+GMAIL_TOKEN_FILE = PROJECT_ROOT / "token.json"
+
+# Where downloaded attachments are saved
+GMAIL_STAGING_DIR = PROJECT_ROOT / "staging"
+
+# Search keywords for invoice/receipt/PO emails
+GMAIL_SUBJECT_KEYWORDS = [
+    "invoice", "invoices",
+    "receipt", "resit",  # "resit" = Malay for receipt
+    "purchase order", "po",
+    "bill", "statement",
+    "tax invoice",  # Malaysian SST invoice format
+]
+
+# File extensions to download as attachments
+GMAIL_ATTACHMENT_EXTENSIONS = [".pdf", ".jpg", ".jpeg", ".png", ".heic"]
+
+# MIME types to accept
+GMAIL_ATTACHMENT_MIME_TYPES = [
+    "application/pdf",
+    "image/jpeg",
+    "image/png",
+    "image/heic",
+]
+
+# Optional: whitelist of sender domains (empty = accept all)
+# e.g. ["supplier.com.my", "vendor.com"]
+GMAIL_VENDOR_DOMAINS: list[str] = []
+
+# Max emails to fetch per run (Gmail API quota safety)
+GMAIL_MAX_RESULTS = 50
+
+# Cache file for processed message IDs (deduplication)
+GMAIL_PROCESSED_CACHE = PROJECT_ROOT / ".gmail_processed_ids.json"
+
+# Scopes — readonly is enough; we never send email via Gmail API
+GMAIL_SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]

@@ -208,6 +208,67 @@ class FinalReport(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Gmail crawler models
+# ---------------------------------------------------------------------------
+
+class AttachmentInfo(BaseModel):
+    """Metadata for a single email attachment."""
+    filename: str
+    mime_type: str = "application/octet-stream"
+    size: int = Field(default=0, description="Size in bytes")
+    attachment_id: str = Field(default="")
+    downloaded: bool = False
+    local_path: Optional[str] = None
+
+    @field_validator("size")
+    @classmethod
+    def validate_size(cls, v: int) -> int:
+        return max(v, 0)
+
+
+class RawEmailDocument(BaseModel):
+    """An email fetched from Gmail that may contain invoice/receipt/PO attachments.
+
+    The GmailCrawler produces these. The Logistics agent (or a pre-processing
+    step) can then OCR the downloaded attachments and convert them to
+    DocumentInfo objects for the rest of the pipeline.
+    """
+    message_id: str = Field(description="Gmail message ID")
+    thread_id: str = Field(default="")
+    sender: str = Field(description="Full sender header, e.g. 'Vendor <a@b.com>'")
+    sender_email: str = Field(description="Extracted email address")
+    subject: str
+    date: str = Field(description="Email date in ISO format")
+    body_snippet: str = Field(default="", description="First ~200 chars of body")
+    has_attachment: bool = True
+    attachments: list[AttachmentInfo] = Field(default_factory=list)
+    downloaded_files: list[str] = Field(
+        default_factory=list,
+        description="Local file paths of downloaded attachments",
+    )
+    detected_doc_type: str = Field(
+        default="unknown",
+        description="invoice, receipt, PO, or unknown (from subject/filename)",
+    )
+    vendor_name: str = Field(
+        default="",
+        description="Vendor name extracted from sender or subject",
+    )
+    processed_at: str = Field(
+        default_factory=lambda: datetime.now().isoformat()
+    )
+
+    def to_summary(self) -> str:
+        """One-line summary for display."""
+        att_count = len(self.attachments)
+        return (
+            f"[{self.message_id}] {self.date} | {self.vendor_name} | "
+            f"{self.subject[:50]} | {self.detected_doc_type} | "
+            f"{att_count} attachment(s)"
+        )
+
+
+# ---------------------------------------------------------------------------
 # Pipeline result (aggregate output)
 # ---------------------------------------------------------------------------
 
