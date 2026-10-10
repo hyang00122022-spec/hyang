@@ -55,6 +55,58 @@ def parse_documents(data: list[dict]) -> list[DocumentInfo]:
     return [DocumentInfo(**item) for item in data]
 
 
+def post_process(args, secretary, result):
+    """Handle post-pipeline flags: --export, --audit, --replies, --vendors."""
+    # Export
+    if args.export:
+        from .exporter import Exporter
+        exporter = Exporter()
+        if args.export == "all":
+            paths = exporter.export_all(result, args.export_dir, "report")
+            print(f"\n--- Exported to {args.export_dir}/ ---")
+            for fmt, path in paths.items():
+                print(f"  {fmt:10s}: {path}")
+        else:
+            ext_map = {"csv": ".csv", "json": ".json", "markdown": ".md", "journal": "_journal.csv"}
+            filename = f"report{ext_map.get(args.export, '.txt')}"
+            path = Path(args.export_dir) / filename
+            if args.export == "csv":
+                exporter.export_csv(result, path)
+            elif args.export == "json":
+                exporter.export_json(result, path)
+            elif args.export == "markdown":
+                exporter.export_markdown(result, path)
+            elif args.export == "journal":
+                exporter.export_journal(result, path)
+            print(f"\n--- Exported to {path} ---")
+
+    # Vendor database
+    if args.vendors:
+        print()
+        print(secretary.vendor_manager.format_summary())
+
+    # Audit log
+    if args.audit:
+        print()
+        print(secretary.audit_logger.format_summary())
+
+    # Reply tracking
+    if args.replies and result.chase_emails:
+        from .reply_tracker import ReplyTracker
+        tracker = ReplyTracker(mock=True)
+        replies = tracker.check_replies(result.chase_emails)
+        if replies:
+            print()
+            print(tracker.format_replies(replies))
+            # Update task statuses
+            for reply in replies:
+                tracker.update_task_status(reply, result.tasks)
+            print()
+            print(tracker.format_summary(result.chase_emails))
+        else:
+            print("\n  No vendor replies detected.")
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Secretary Agent — Task Coordinator for Document Processing",
@@ -147,9 +199,62 @@ Examples:
         help="Maximum number of emails to fetch (default: 50)",
     )
 
+    # ------------------------------------------------------------------
+    # Tier 1 feature options
+    # ------------------------------------------------------------------
+    parser.add_argument(
+        "--export",
+        type=str,
+        default=None,
+        choices=["csv", "json", "markdown", "journal", "all"],
+        help="Export pipeline result to file (csv, json, markdown, journal, all)",
+    )
+    parser.add_argument(
+        "--export-dir",
+        type=str,
+        default="output",
+        help="Directory for exported files (default: output)",
+    )
+    parser.add_argument(
+        "--vendors",
+        action="store_true",
+        help="Display the vendor master database",
+    )
+    parser.add_argument(
+        "--audit",
+        action="store_true",
+        help="Display the audit log after running",
+    )
+    parser.add_argument(
+        "--replies",
+        action="store_true",
+        help="Check for vendor replies to chase emails (mock mode)",
+    )
+    parser.add_argument(
+        "--schedule",
+        action="store_true",
+        help="Display the scheduler status",
+    )
+
     args = parser.parse_args()
 
     secretary = Secretary()
+
+    # ------------------------------------------------------------------
+    # Standalone: Vendor database
+    # ------------------------------------------------------------------
+    if args.vendors and not (args.demo or args.gmail or args.interactive or args.exceptions):
+        print(secretary.vendor_manager.format_summary())
+        return
+
+    # ------------------------------------------------------------------
+    # Standalone: Scheduler status
+    # ------------------------------------------------------------------
+    if args.schedule and not (args.demo or args.gmail or args.interactive or args.exceptions):
+        from .scheduler import Scheduler
+        sched = Scheduler()
+        print(sched.format_status())
+        return
 
     # ------------------------------------------------------------------
     # Gmail mode — fetch emails before running pipeline
@@ -213,6 +318,8 @@ Examples:
             print(f"Output written to {args.output}")
         else:
             print(output)
+
+        post_process(args, secretary, result)
         return
 
     # ------------------------------------------------------------------
@@ -276,6 +383,8 @@ Examples:
             print(f"Output written to {args.output}")
         else:
             print(output)
+
+        post_process(args, secretary, result)
         return
 
     # ------------------------------------------------------------------
@@ -315,6 +424,8 @@ Examples:
         print(f"Output written to {args.output}")
     else:
         print(output)
+
+    post_process(args, secretary, result)
 
 
 if __name__ == "__main__":

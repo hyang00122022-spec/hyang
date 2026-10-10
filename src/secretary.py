@@ -30,6 +30,7 @@ from typing import Optional
 
 from .config import BUSINESS_NAME, BUSINESS_CURRENCY
 from .email_drafter import EmailDrafter
+from .audit_logger import AuditLogger
 from .models import (
     DocumentInfo,
     ExceptionEvent,
@@ -39,6 +40,7 @@ from .models import (
 from .planner import Planner
 from .reporter import Reporter
 from .task_generator import TaskGenerator
+from .vendor_manager import VendorManager
 
 
 class Secretary:
@@ -60,6 +62,8 @@ class Secretary:
         self.task_generator = TaskGenerator()
         self.email_drafter = EmailDrafter()
         self.reporter = Reporter()
+        self.audit_logger = AuditLogger()
+        self.vendor_manager = VendorManager()
 
     def run(
         self,
@@ -83,11 +87,16 @@ class Secretary:
         exceptions = exceptions or []
         documents = documents or []
         warnings: list[str] = []
+        audit_entries: list = []
 
         # ---------------------------------------------------------------
         # P0: Generate plan
         # ---------------------------------------------------------------
         plan = self.planner.generate_plan(goal)
+        audit_entries.append(self.audit_logger.log(
+            "created", "plan", "PLAN",
+            f"Generated execution plan for: {goal}",
+        ))
 
         # ---------------------------------------------------------------
         # P1 + P2: Process exceptions -> tasks + chase emails
@@ -95,6 +104,30 @@ class Secretary:
         tasks, chase_emails = self.task_generator.process_exceptions(
             exceptions
         )
+
+        # Log task creation
+        for task in tasks:
+            audit_entries.append(self.audit_logger.log(
+                "created", "task", task.task_id,
+                f"Created {task.priority.name} task: {task.title}",
+            ))
+
+        # Log chase email creation
+        for email in chase_emails:
+            audit_entries.append(self.audit_logger.log(
+                "created", "email", email.email_id,
+                f"Drafted chase email for {email.related_invoice}",
+            ))
+
+        # Update vendor database with invoice info from exceptions
+        vendor_updates: list = []
+        for exc in exceptions:
+            vendor = self.vendor_manager.add_or_update_vendor(
+                name=exc.vendor_name,
+                invoice_amount=exc.amount,
+                invoice_date=exc.invoice_date,
+            )
+            vendor_updates.append(vendor)
 
         # Add emails to the drafter for approval workflow
         self.email_drafter.add_drafts(chase_emails)
@@ -119,6 +152,12 @@ class Secretary:
             exceptions_count=len(exceptions),
         )
 
+        if final_report:
+            audit_entries.append(self.audit_logger.log(
+                "created", "report", "RPT",
+                f"Generated final report: {goal}",
+            ))
+
         # ---------------------------------------------------------------
         # Assemble result
         # ---------------------------------------------------------------
@@ -129,6 +168,8 @@ class Secretary:
             final_report=final_report,
             exceptions_processed=len(exceptions),
             warnings=warnings,
+            audit_entries=audit_entries,
+            vendor_updates=vendor_updates,
         )
 
     # ------------------------------------------------------------------

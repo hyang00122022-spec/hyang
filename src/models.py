@@ -269,6 +269,112 @@ class RawEmailDocument(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Vendor Master Database models
+# ---------------------------------------------------------------------------
+
+class VendorInfo(BaseModel):
+    """A vendor record in the master vendor database.
+
+    Centralizes contact info, payment terms, and invoice history so the
+    pipeline doesn't need to re-derive this from emails every time.
+    """
+    vendor_id: str
+    name: str
+    email: str = ""
+    phone: Optional[str] = None
+    payment_terms_days: int = Field(default=30, ge=0)
+    category_code: str = Field(default="OFC", description="Default S5 category")
+    tax_id: Optional[str] = None
+    bank_name: Optional[str] = None
+    bank_account: Optional[str] = None
+    first_invoice_date: Optional[str] = None
+    total_invoices: int = Field(default=0, ge=0)
+    total_amount: float = Field(default=0.0, ge=0)
+    is_new_vendor: bool = Field(default=True, description="True if <2 prior invoices")
+    notes: str = ""
+
+    @field_validator("total_amount")
+    @classmethod
+    def validate_amount(cls, v: float) -> float:
+        return round(v, 2)
+
+    def to_summary(self) -> str:
+        """One-line summary."""
+        new_flag = " [NEW]" if self.is_new_vendor else ""
+        return (
+            f"[{self.vendor_id}] {self.name}{new_flag} | "
+            f"{self.payment_terms_days}d terms | "
+            f"{self.total_invoices} invoices | "
+            f"RM {self.total_amount:.2f} total"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Audit Log models
+# ---------------------------------------------------------------------------
+
+class AuditEntry(BaseModel):
+    """A single audit log entry tracking a state change in the pipeline."""
+    entry_id: str
+    timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
+    action: str = Field(description="created, updated, approved, rejected, sent, exported, etc.")
+    entity_type: str = Field(description="task, email, report, vendor, document, reply")
+    entity_id: str
+    description: str
+    actor: str = Field(default="system", description="Who/what performed the action")
+
+
+# ---------------------------------------------------------------------------
+# Chase Email Reply Tracking models
+# ---------------------------------------------------------------------------
+
+class ReplyStatus(str, Enum):
+    """Status of a vendor's reply to a chase email."""
+    NO_REPLY = "no_reply"
+    REPLIED = "replied"
+    PAYMENT_CONFIRMED = "payment_confirmed"
+    DISPUTED = "disputed"
+
+
+class ReplyRecord(BaseModel):
+    """A reply from a vendor to a chase email, detected and parsed."""
+    reply_id: str
+    chase_email_id: str
+    vendor_email: str
+    reply_date: str
+    reply_subject: str
+    reply_snippet: str = Field(default="")
+    detected_status: ReplyStatus = ReplyStatus.REPLIED
+    linked_task_id: str
+    processed_at: str = Field(
+        default_factory=lambda: datetime.now().isoformat()
+    )
+
+
+# ---------------------------------------------------------------------------
+# Scheduler models
+# ---------------------------------------------------------------------------
+
+class ScheduleFrequency(str, Enum):
+    """Frequency options for scheduled pipeline runs."""
+    MONTHLY = "monthly"
+    WEEKLY = "weekly"
+    DAILY = "daily"
+
+
+class ScheduleConfig(BaseModel):
+    """Configuration for automated/scheduled pipeline runs."""
+    frequency: ScheduleFrequency = ScheduleFrequency.MONTHLY
+    day_of_month: Optional[int] = Field(default=1, ge=1, le=31, description="For monthly: day of month (1-31)")
+    day_of_week: Optional[int] = Field(default=None, ge=0, le=6, description="For weekly: 0=Monday")
+    time: str = Field(default="09:00", description="HH:MM in 24h format")
+    goal: str = Field(default="Close out current month")
+    enabled: bool = True
+    last_run: Optional[str] = None
+    next_run: Optional[str] = None
+
+
+# ---------------------------------------------------------------------------
 # Pipeline result (aggregate output)
 # ---------------------------------------------------------------------------
 
@@ -280,3 +386,6 @@ class PipelineResult(BaseModel):
     final_report: Optional[FinalReport] = None
     exceptions_processed: int = 0
     warnings: list[str] = Field(default_factory=list)
+    audit_entries: list[AuditEntry] = Field(default_factory=list)
+    vendor_updates: list[VendorInfo] = Field(default_factory=list)
+    reply_records: list[ReplyRecord] = Field(default_factory=list)
